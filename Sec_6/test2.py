@@ -64,10 +64,11 @@ def get_page():
     # 循环获取URL及其响应数据
     while True:
             response = requests.get(url, headers=headers)
-            print(response.status_code)
             try:
                 # 获取第一个url返回响应中的since_id
-                since_id = response.json().get('data').get('cardlistInfo').get('since_id')
+                # since_id = response.json().get('data').get('cardlistInfo').get('since_id')
+                since_id = json.loads(response.content)["data"]["cardlistInfo"]["since_id"]
+                print(since_id)
             except:
                 # 获取不到代表没有下一个链接了，并终止循环退出
                 print("no weibo")
