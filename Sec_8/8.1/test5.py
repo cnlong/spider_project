@@ -37,8 +37,8 @@ PASSWORD = '123456'
 
 # 1.访问网站
 url = 'https://auth.geetest.com/login'
-# browser =  webdriver.Chrome()
-browser = webdriver.Firefox()
+browser =  webdriver.Chrome()
+# browser = webdriver.Firefox()
 browser.maximize_window()
 wait = WebDriverWait(browser, 20)
 browser.get(url)
