@@ -18,8 +18,8 @@ browser.get(url)
 
 username = browser.find_element_by_id('login-username')
 passwd = browser.find_element_by_id('login-passwd')
-username.send_keys('13809023772')
-passwd.send_keys('cal09160829')
+username.send_keys('')
+passwd.send_keys('')
 wait = WebDriverWait(browser, 10)
 
 login = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, 'btn-login')))
