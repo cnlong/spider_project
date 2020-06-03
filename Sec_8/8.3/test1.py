@@ -99,6 +99,7 @@ scale = [img.size['width']/img0.size[0], img.size['height']/img0.size[1]]
 # 登录超级鹰平台
 cjy = Chaojiying_Client('xiaoyuer', 'cal09160829', '905619')
 # 9005是其平台对应的验证码类型
+# 获取图片字节流的数据，传入超级鹰平台
 result = cjy.PostPic(img_content, '9005')
 # 分析结果
 if result['err_no'] == 0:
