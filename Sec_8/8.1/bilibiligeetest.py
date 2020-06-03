@@ -84,7 +84,7 @@ class BiliGeetest():
 
     def get_distance(self, image1, image2):
         """获取图片像素差异的距离"""
-        threshold = 10
+        threshold = 60
         for x in range(image1.size[0]):
             for y in range(image1.size[1]):
                 image1_pixel = image1.load()[x, y]
@@ -101,9 +101,9 @@ class BiliGeetest():
         current = 0
         while current < distance:
             if current < mid:
-                a = 5
+                a = 2
             else:
-                a = -4
+                a = -3
             t = random.randint(3, 6)/10
             v0 = v
             v = v0 + a * t
