@@ -1,4 +1,3 @@
-import requests
 from hashlib import md5
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
@@ -102,6 +101,7 @@ cjy = Chaojiying_Client('xiaoyuer', 'cal09160829', '905619')
 # 获取图片字节流的数据，传入超级鹰平台
 result = cjy.PostPic(img_content, '9005')
 # 分析结果
+# 错误结果为0，即为分析正常
 if result['err_no'] == 0:
     position = result['pic_str'].split('|')
     print(position)
