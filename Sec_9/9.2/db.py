@@ -36,7 +36,7 @@ class RedisClient(object):
             # 随机返回一个代理
             return choice(result)
         else:
-            # 未获取到最高分代理，则
+            # 未获取到最高分代理，则按照排名来获取代理
             # zrevrange按照权重值从大到小排序
             result = self.sr.zrevrange(REDIS_KEY, MIN_SCORE, MAX_SCORE)
             if len(result):
@@ -56,3 +56,25 @@ class RedisClient(object):
         else:
             print('代理：' + proxy + '当前分数：' + score + '移除')
             return self.sr.zrem(REDIS_KEY, proxy)
+
+    def exist(self, proxy):
+        """判断某个代理是否存在"""
+        score = self.sr.zscore(REDIS_KEY, proxy)
+        # 查到socre为值，查不到socre为None
+        # score == None
+        # 存在not false返回true
+        # 不存在not ture 返回false
+        return not score == None
+
+    def max(self, proxy):
+        """一旦某个代理可用，即将其分数设置为最大值"""
+        print("代理" + proxy + '可用，设置为：'+ MAX_SCORE)
+        return self.sr.zadd(REDIS_KEY, MAX_SCORE, proxy)
+
+    def count(self):
+        """获取代理的数量"""
+        return self.sr.zcard(REDIS_KEY)
+
+    def all(self):
+        """获取全部代理"""
+        return self.sr.zrangebyscore(REDIS_KEY, MIN_SCORE, MAX_SCORE)
