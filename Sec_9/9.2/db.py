@@ -50,11 +50,11 @@ class RedisClient(object):
         score = self.sr.zscore(REDIS_KEY, proxy)
         # 如果获取到值，且大于最小值，则减1
         if score and score > MIN_SCORE:
-            print('代理：'+ proxy + '当前分数：'+ score + '减1' )
+            print('代理：'+ str(proxy) + '当前分数：'+ str(score) + '减1' )
             return self.sr.zincrby(REDIS_KEY, proxy, -1)
         # 如果小于最小值，移除
         else:
-            print('代理：' + proxy + '当前分数：' + score + '移除')
+            print('代理：' + str(proxy) + '当前分数：' + str(score) + '移除')
             return self.sr.zrem(REDIS_KEY, proxy)
 
     def exist(self, proxy):
@@ -68,7 +68,7 @@ class RedisClient(object):
 
     def max(self, proxy):
         """一旦某个代理可用，即将其分数设置为最大值"""
-        print("代理" + proxy + '可用，设置为：'+ MAX_SCORE)
+        print("代理" + str(proxy) + '可用，设置为：'+ str(MAX_SCORE))
         return self.sr.zadd(REDIS_KEY, MAX_SCORE, proxy)
 
     def count(self):
