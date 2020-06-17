@@ -9,7 +9,8 @@ import time
 # 定义使用代理请求的测试网站
 # TEST_URL = 'http://www.baidu.com'
 # TEST_URL = 'https://www.xiaoyuer.com'
-TEST_URL = 'https://www.sunyuchao.com/'
+# TEST_URL = 'https://www.sunyuchao.com/'
+TEST_URL = 'https://weixin.sogou.com/weixin?query=NBA&type=2'
 # 定义访问测试网站的返回状态码
 VALID_STATUS_CODES = [200, 302]
 # 定义批量测试一次性检测的代理数目
