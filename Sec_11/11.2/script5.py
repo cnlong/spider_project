@@ -1,3 +1,3 @@
 def response(flow):
     print(flow.request.url)
-    print(flow.response.text.encode('utf-8'))
+    print(flow.response.text)
