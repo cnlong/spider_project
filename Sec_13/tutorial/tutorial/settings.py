@@ -88,3 +88,14 @@ ROBOTSTXT_OBEY = True
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+# 添加定义好的Item Pipeline
+ITEM_PIPELINES = {
+    # 键值对，键为Pipeline名称，值为优先级，越低优先级越高越先被调用
+    'tutorial.pipelines.TextPipeline': 300,
+    'tutorial.pipelines.MongoPipeline': 400,
+}
+
+# 定义MongoDB的信息
+MONGO_URL = '192.168.6.160'
+MONGO_DB = 'tutorial'
