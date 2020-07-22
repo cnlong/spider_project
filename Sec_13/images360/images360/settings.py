@@ -91,3 +91,25 @@ ROBOTSTXT_OBEY = True
 
 # 定义爬取的最大页数
 MAX_PAGE = 5
+
+# 定义MongoDB的信息
+MONGO_URL = '192.168.6.160'
+MONGO_DB = 'images360'
+
+# 定义MySQL的信息
+MYSQL_HOST = '192.168.6.160'
+MYSQL_DATABASE = 'images360'
+# port需要数字不是字符串
+MYSQL_PORT = 3306
+MYSQL_USER = 'root'
+MYSQL_PASSWORD = '123456'
+
+# 图片保存的目录
+IMAGES_STORE = './images'
+
+# 添加自定义的Pipeline
+ITEM_PIPELINES = {
+    'images360.pipelines.ImagePipeline': 300,
+    'images360.pipelines.MongoPipeline': 301,
+    'images360.pipelines.MysqlPipeline': 302,
+}

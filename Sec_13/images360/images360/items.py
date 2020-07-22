@@ -13,6 +13,7 @@ class Images360Item(scrapy.Item):
     # name = scrapy.Field()
     pass
 
+
 # 定义item对象，定义数据保存的格式
 class ImageItem(scrapy.Item):
     # MongoDB和MySQL存储的表名

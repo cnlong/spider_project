@@ -20,9 +20,11 @@ class ImagesSpider(scrapy.Spider):
             item = ImageItem()
             # 保存数据
             item['id'] = image.get('id')
-            item['url'] = image.get('https://p1.ssl.qhimgs1.com/t0105567bca0b70ed01.jpg')
+            item['url'] = image.get('qhimg_thumb')
             item['title'] = image.get('title')
-            item['thumb'] = image.get('https://p1.ssl.qhimgs1.com/sdr/200_200_/t0105567bca0b70ed01.jpg')
+            item['thumb'] = image.get('qhimg_url')
+            print('item', item)
+            yield item
 
     def start_requests(self):
         # url参数
