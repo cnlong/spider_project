@@ -13,15 +13,30 @@ class TaobaoSpider(scrapy.Spider):
     base_url = 'https://s.taobao.com/search?q='
 
     def parse(self, response):
-        products = response.css('.m-itemlist .items .item')
+        # products = response.css('.m-itemlist .items .item')
+        # for product in products:
+        #     item = ProductItem()
+        #     item['price'] = product.css('.ctx-box .price strong::text').extract_first()
+        #     item['title'] = product.css('a.J_ClickStat::text').extract_first()
+        #     item['shop'] = product.css('.shop::text').extract_first()
+        #     item['image'] = product.css('.pic img::attr(data-src)').extract_first()
+        #     item['deal'] = product.css('.deal-cnt::text').extract_first()
+        #     item['location'] = product.css('.location::text').extract_first()
+        #     print(item)
+        #     yield item
+        # xpath的选取精准度比css选取更准确
+        # 注意 div[@class="items"]和div[contains(@class="items")]区别
+        products = response.xpath(
+            '//div[@id="mainsrp-itemlist"]//div[@class="items"][1]//div[contains(@class, "item")]')
         for product in products:
-            item = ProductItem
-            item['price'] = product.css('.ctx-box .price strong::text').extract_first()
-            item['title'] = product.css('a.J_ClickStat::text').extract_first()
-            item['shop'] = product.css('.shop::text').extract_first()
-            item['image'] = product.css('.pic img::attr(data-src)').extract_first()
-            item['deal'] = product.css('.deal-cnt::text').extract_first()
-            item['location'] = product.css('.location::text').extract_first()
+            item = ProductItem()
+            item['price'] = ''.join(product.xpath('.//div[contains(@class, "price")]//text()').extract()).strip()
+            item['title'] = ''.join(product.xpath('.//div[contains(@class, "title")]//text()').extract()).strip()
+            item['shop'] = ''.join(product.xpath('.//div[contains(@class, "shop")]//text()').extract()).strip()
+            item['image'] = ''.join(
+                product.xpath('.//div[@class="pic"]//img[contains(@class, "img")]/@data-src').extract()).strip()
+            item['deal'] = product.xpath('.//div[contains(@class, "deal-cnt")]//text()').extract_first()
+            item['location'] = product.xpath('.//div[contains(@class, "location")]//text()').extract_first()
             print(item)
             yield item
 

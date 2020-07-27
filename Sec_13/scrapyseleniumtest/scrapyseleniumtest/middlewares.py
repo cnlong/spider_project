@@ -113,17 +113,30 @@ class ScrapyseleniumtestDownloaderMiddleware(object):
 
 class SeleniumMiddleware(object):
     """调用Selenium处理抓取请求"""
-    def __init__(self, timeout=None, driverpath=None):
-        self.driver_path = driverpath
+    # def __init__(self, timeout=None, useragent=None, cookie=None):
+    #     self.useragent = useragent
+    #     self.cookie = cookie
+    #     self.logger = getLogger(__name__)
+    #     self.timeout = timeout
+    #     # 利用chrome的无头浏览模式
+    #     self.chrome_options = Options()
+    #     # 以 f开头表示在字符串内支持大括号内的python 表达式
+    #     self.chrome_options.add_argument(f'user-agent={self.useragent}')
+    #     self.chrome_options.add_argument(f'cookie={self.cookie}')
+    #     self.chrome_options.add_argument('--headless')
+    #     self.chrome_options.add_argument('--disable-gpu')
+    #     self.browser = webdriver.Chrome(options=self.chrome_options)
+    #     self.browser.set_window_size(1400, 700)
+    #     self.browser.set_page_load_timeout(self.timeout)
+    #     self.wait = WebDriverWait(self.browser, self.timeout)
+
+    # 因为打开页面需要登录，无头模式需要登录操作较为繁琐
+    # 直接使用浏览器打开扫码登录既可
+    def __init__(self, timeout=None):
         self.logger = getLogger(__name__)
         self.timeout = timeout
-        # 利用chrome的无头浏览模式
-        self.chrome_options = Options()
-        self.chrome_options.add_argument('--headless')
-        self.chrome_options.add_argument('--disable-gpu')
-        self.browser = webdriver.Chrome(options=self.chrome_options, executable_path=self.driver_path)
+        self.browser = webdriver.Chrome()
         self.browser.set_window_size(1400, 700)
-        self.browser.set_page_load_timeout(self.timeout)
         self.wait = WebDriverWait(self.browser, self.timeout)
 
     def __del__(self):
@@ -170,5 +183,4 @@ class SeleniumMiddleware(object):
 
     @classmethod
     def from_crawler(cls, crawler):
-        return cls(timeout=crawler.settings.get('SELENIUM_TIMEOUT'),
-                   driverpath=crawler.settings.get('SELENIUM_DRIVER_PATH'))
+        return cls(timeout=crawler.settings.get('SELENIUM_TIMEOUT'))
