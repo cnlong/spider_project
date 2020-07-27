@@ -14,6 +14,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from scrapy.http import HtmlResponse
 from logging import getLogger
 from selenium.webdriver.chrome.options import Options
+import json
 
 
 class ScrapyseleniumtestSpiderMiddleware(object):
@@ -176,6 +177,10 @@ class SeleniumMiddleware(object):
             self.wait.until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, '#mainsrp-pager li.item.active > span'), str(page)))
             # 页码加载完成，返回HtmlResponse给Spider
             # self.browser.page_source获取浏览器加载后的源码
+            cookie = self.browser.get_cookies()
+            jsoncookies = json.dumps(cookie)
+            with open('qqhomepage.json', 'w') as f:
+                f.write(jsoncookies)
             return HtmlResponse(url=request.url, body=self.browser.page_source, request=request, encoding='utf-8', status=200)
         except TimeoutException:
             # 请求超时或者加载超时,返回500状态码
