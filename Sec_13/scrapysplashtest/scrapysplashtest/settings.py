@@ -19,7 +19,7 @@ NEWSPIDER_MODULE = 'scrapysplashtest.spiders'
 #USER_AGENT = 'scrapysplashtest (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -107,3 +107,17 @@ DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
 
 # 配置一个cache存储
 HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
+
+# MongoDB配置
+MONGO_URI = '192.168.6.160'
+MONGO_DB = 'taobao'
+
+# 添加自定义的pipeline
+ITEM_PIPELINES = {
+    'scrapysplashtest.pipelines.MongoPipeline': 300,
+}
+
+JSON_PATH = 'taobaopage.json'
+
+KEYWORDS = ['iPad', '情趣用品']
+MAX_PAGE = 3

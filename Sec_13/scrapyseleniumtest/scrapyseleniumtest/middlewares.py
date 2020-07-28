@@ -177,9 +177,11 @@ class SeleniumMiddleware(object):
             self.wait.until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, '#mainsrp-pager li.item.active > span'), str(page)))
             # 页码加载完成，返回HtmlResponse给Spider
             # self.browser.page_source获取浏览器加载后的源码
+            # get_cookies()返回的是cookie组成的列表
             cookie = self.browser.get_cookies()
+            # 将其转换成字符串写入文件中
             jsoncookies = json.dumps(cookie)
-            with open('qqhomepage.json', 'w') as f:
+            with open('taobaopage.json', 'w') as f:
                 f.write(jsoncookies)
             return HtmlResponse(url=request.url, body=self.browser.page_source, request=request, encoding='utf-8', status=200)
         except TimeoutException:
