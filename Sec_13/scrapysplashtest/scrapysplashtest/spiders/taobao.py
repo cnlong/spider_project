@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# 通过splash执行evajs()方法在页面上进行翻页，无需分析请求URL的规律，
+# 打开初始URL，然后根据传入的Page页码，进行对应页面跳转即可
 import scrapy
 import json
 from urllib.parse import quote, urlencode
@@ -13,6 +15,9 @@ function main(splash, args)
     assert(splash:go(args.url))
     splash:init_cookies(args.cookies)
     assert(splash:go(args.url))
+    assert(splash:wait(args.wait))
+    js = string.format("document.querySelector('#mainsrp-pager div.form > input').value=%d;document.querySelector('#mainsrp-pager div.form > span.btn.J_Submit').click()", args.page)
+    splash:evaljs(js)
     assert(splash:wait(args.wait))
     return splash:html()
 end
@@ -59,13 +64,8 @@ class TaobaoSpider(scrapy.Spider):
         cookies = self.get_cookies(self.settings.get('JSON_PATH'))
         for keyword in self.settings.get('KEYWORDS'):
             for page in range(1, self.settings.get('MAX_PAGE') + 1):
-                # 根据page页码进行url构建
-                # 这样对每一页的请求构建一个url，然后对每一个url生成一个splashrequest，将cookies加入
-                # 也可以通过splash的evaljs()方法调用js代码，实现页码的填充和翻页点击，返回下一页的请求
-                if page == 1:
-                    url = self.base_url + quote(keyword)
-                else:
-                    url = self.base_url + quote(keyword) + '&' + urlencode({'s': 44*(page-1)})
+                # 向splash中传入翻页页码，然后调用js执行翻页操作
+                url = self.base_url + quote(keyword)
                 yield SplashRequest(url=url, callback=self.parse, endpoint='execute',
                                     splash_url=splash_url,
-                                    args={'lua_source': script, 'wait': 5, 'cookies': cookies})
+                                    args={'lua_source': script, 'wait': 5, 'cookies': cookies, 'page': page})
