@@ -16,4 +16,9 @@ class ScrapyyuniversalItem(scrapy.Item):
 
 class NewsItem(scrapy.Item):
     title = scrapy.Field()
+    url = scrapy.Field()
+    text = scrapy.Field()
+    datetime = scrapy.Field()
+    source = scrapy.Field()
+    website = scrapy.Field()
 
