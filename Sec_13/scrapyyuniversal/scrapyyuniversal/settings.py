@@ -68,6 +68,10 @@ ROBOTSTXT_OBEY = False
 #    'scrapyyuniversal.pipelines.ScrapyyuniversalPipeline': 300,
 #}
 
+ITEM_PIPELINES = {
+'scrapyyuniversal.pipelines.MongoPipeline': 300,
+}
+
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True
@@ -88,3 +92,7 @@ ROBOTSTXT_OBEY = False
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+# 定义mongodb
+MONGO_URI = '192.168.6.160'
+MONGO_DB = 'tech'
+MONGO_COLLECTION = 'news'
