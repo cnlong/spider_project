@@ -72,7 +72,7 @@ class WeibocnSpider(scrapy.Spider):
             # 获取request中传入的详情用户的id
             uid = response.meta.get('uid')
             # 获取关注用户的部分信息，组建成字典，用户用户相关数据的item
-            followers = [{'id', follow.get('user').get('id'), 'name', follow.get('user').get('screen_name')} for follow in follows]
+            followers = [{'id': follow.get('user').get('id'), 'name': follow.get('user').get('screen_name')} for follow in follows]
             # 将用户的关注用户相关信息存入到item中
             user_relation_item = UserRelationItem()
             user_relation_item['id'] = uid
@@ -87,7 +87,37 @@ class WeibocnSpider(scrapy.Spider):
                           meta={'uid': uid, 'page': page})
 
     def parse_fans(self, response):
-        pass
+        """粉丝用户数据解析"""
+        result = json.loads(response.text)
+        # 判断是否获取到数据,从多个维度进行判断
+        # 返回的关注数据中，会有多个组，查看网页，最后一个组才是用户的粉丝列表
+        if result.get('ok') and result.get('data').get('cards') and len(result.get('data').get('cards')) and \
+                result.get('data').get('cards')[-1].get('card_group'):
+            # 获取粉丝用户列表
+            fans = result.get('data').get('cards')[-1].get('card_group')
+            # 循环遍历关注用户列表，获取用户id，并为每个用户id生成一个新的用户详情request
+            for fan in fans:
+                # 获取关注用户的用户信息
+                if fan.get('user'):
+                    uid = fan.get('user').get('id')
+                    yield Request(self.user_url.format(uid=uid), callback=self.parse_user)
+            # 获取request中传入的详情用户的id
+            uid = response.meta.get('uid')
+            # 获取关注用户的部分信息，组建成字典，用户用户相关数据的item
+            faners = [{'id': fan.get('user').get('id'), 'name': fan.get('user').get('screen_name')} for fan
+                         in fans]
+            # 将用户的关注用户相关信息存入到item中
+            user_relation_item = UserRelationItem()
+            user_relation_item['id'] = uid
+            user_relation_item['follows'] = []
+            # 因为这里获取的是粉丝用户列表信息，无法获取到关注用户列表信息
+            # 暂时将该字段设置为空，后续通过pipeline将其和关注解析的数据合并
+            user_relation_item['fans'] = faners
+            yield user_relation_item
+            # 叠加page，生成下一页的关注用户列表request
+            since_id = response.meta.get('since_id') + 1
+            yield Request(self.follow_url.format(uid=uid, since_id=since_id), callback=self.parse_fans,
+                          meta={'uid': uid, 'since_id': since_id})
 
     def parse_weibos(self, response):
         pass
