@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import scrapy
 from scrapy import Request, Spider
+import json
+from weibo.items import UserItem, UserRelationItem
 
 
 class WeibocnSpider(scrapy.Spider):
@@ -21,7 +23,74 @@ class WeibocnSpider(scrapy.Spider):
             yield Request(url=self.user_url.format(uid=uid), callback=self.parse_user)
 
     def parse_user(self, response):
-        self.logger.debug(response)
+        """解析用户详情页的数据"""
+        result = json.loads(response.text)
+        # 判断是否获取到用户的数据信息
+        if result.get('data').get('userInfo'):
+            user_info = result.get('date').get('userInfo')
+            # 实例化useritem对象
+            user_item = UserItem()
+            # 通过查看传回的数据信息，可以得知返回的数据中有哪些数据
+            # 根据返回数据和自定义的item对象定义一个key-value的字典
+            # 便于给user_item进行赋值，key为item中的字段，value为返回数据中的字段
+            file_map = {
+                'id': 'id', 'name': 'screen_name', 'avatar': 'profile_image_url', 'cover': 'cover_image_phone',
+                'gender': 'gender', 'description': 'description', 'fans_count': 'followers_count',
+                'follows_count': 'follow_count', 'weibos_count': 'statuses_count',
+                'verified': 'verified',  # 是否认证
+                'verified_reason': 'verified_reason',  # 认证理由
+                'verified_type': 'verified_type'  # 认证类型，-1普通用户，0会员用户
+            }
+            for key, value in file_map.items():
+                user_item[key] = user_info.get(value)
+            # 当然也可以逐一赋值，但是如果属性过多，就显得代码臃肿
+            # user_item['id'] = user_info.get('id')
+            yield user_item
+            # 根据用户详情页捕获的用户id，生成其关注列表、粉丝列表、微博的request
+            uid = user_info.get('id')
+            yield Request(self.follow_url.format(uid=uid, page=1), callback=self.parse_follows,
+                          meta={'page': 1, 'uid': uid})
+            yield Request(self.fan_url.format(uid=uid, since_id=1), callback=self.parse_fans,
+                          meta={'since_id': 1, 'uid': uid})
+            yield Request(self.weibo_url.format(uid=uid, page=1), callback=self.parse_weibos,
+                          meta={'page': 1, 'uid': uid})
+
+    def parse_follows(self, response):
+        """关注用户数据解析"""
+        result = json.loads(response.text)
+        # 判断是否获取到数据,从多个维度进行判断
+        # 返回的关注数据中，会有多个组，查看网页，最后一个组才是用户的关注列表
+        if result.get('ok') and result.get('data').get('cards') and len(result.get('data').get('cards')) and result.get('data').get('cards')[-1].get('card_group'):
+            # 获取关注用户列表
+            follows = result.get('data').get('cards')[-1].get('card_group')
+            # 循环遍历关注用户列表，获取用户id，并为每个用户id生成一个新的用户详情request
+            for follow in follows:
+                # 获取关注用户的用户信息
+                if follow.get('user'):
+                    uid = follow.get('user').get('id')
+                    yield Request(self.user_url.format(uid=uid), callback=self.parse_user)
+            # 获取request中传入的详情用户的id
+            uid = response.meta.get('uid')
+            # 获取关注用户的部分信息，组建成字典，用户用户相关数据的item
+            followers = [{'id', follow.get('user').get('id'), 'name', follow.get('user').get('screen_name')} for follow in follows]
+            # 将用户的关注用户相关信息存入到item中
+            user_relation_item = UserRelationItem()
+            user_relation_item['id'] = uid
+            user_relation_item['follows'] = followers
+            # 因为这里获取的是关注用户列表信息，无法获取到粉丝用户列表信息
+            # 暂时将该字段设置为空，后续通过pipeline将其和粉丝解析的数据合并
+            user_relation_item['fans'] = []
+            yield user_relation_item
+            # 叠加page，生成下一页的关注用户列表request
+            page = response.meta.get('page') + 1
+            yield Request(self.follow_url.format(uid=uid, page=page), callback=self.parse_follows,
+                          meta={'uid': uid, 'page': page})
+
+    def parse_fans(self, response):
+        pass
+
+    def parse_weibos(self, response):
+        pass
 
     def parse(self, response):
         pass
