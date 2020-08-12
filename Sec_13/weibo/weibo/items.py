@@ -53,7 +53,7 @@ class WeiBoItem(scrapy.Item):
     reposts_count = scrapy.Field()
     picture = scrapy.Field()
     pictures = scrapy.Field()
-    scource = scrapy.Field()
+    source = scrapy.Field()
     text = scrapy.Field()
     raw_text = scrapy.Field()
     user = scrapy.Field()

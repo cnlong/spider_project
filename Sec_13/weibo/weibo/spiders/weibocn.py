@@ -2,7 +2,7 @@
 import scrapy
 from scrapy import Request, Spider
 import json
-from weibo.items import UserItem, UserRelationItem
+from weibo.items import UserItem, UserRelationItem, WeiBoItem
 
 
 class WeibocnSpider(scrapy.Spider):
@@ -120,7 +120,34 @@ class WeibocnSpider(scrapy.Spider):
                           meta={'uid': uid, 'since_id': since_id})
 
     def parse_weibos(self, response):
-        pass
+        result = json.loads(response.text)
+        # 判断获取结果
+        if result.get('ok') and result.get('data').get('cards'):
+            # 获取微博列表
+            weibos = result.get('data').get('cards')
+            # 遍历微博列表
+            for weibo in weibos:
+                # 获取微博信息键值对的数据
+                mblog = weibo.get('mblog')
+                # 注意返回的微博列表中，会包含一些非微博的数据，需要剔除
+                # 获取mblog字段的值，存在即为微博，不存在即不是微博
+                if mblog:
+                    weibo_item = WeiBoItem()
+                    # 定义字典，便于存入item
+                    file_map = {'id': 'id', 'attitudes_count': 'attitudes_count', 'comments_count': 'comments_count',
+                                'reposts_count': 'reposts_count', 'picture': 'original_pic',
+                                'pictures': 'pics', 'source': 'source', 'text': 'text', 'raw_text': 'raw_text',
+                                'thumbnail': 'thumbnail_pic', 'created_at': 'created_at'}
+                    for key, value in file_map.items():
+                        weibo_item[key] = mblog.get(value)
+                    # 获取request请求中传入的用户信息参数
+                    uid = response.meta.get('uid')
+                    weibo_item['user'] = uid
+                    yield weibo_item
+                    # 生成微博下一页请求
+                    page= response.meta.get('page')
+                    page = page + 1
+                    yield Request(self.weibo_url.format(uid=uid, page=page), callback=self.parse_weibos, meta={'uid': uid, 'page': page})
 
     def parse(self, response):
         pass
