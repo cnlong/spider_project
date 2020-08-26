@@ -19,7 +19,7 @@ class WeibocnSpider(scrapy.Spider):
     start_users = ['1798590865', '1674166903']
 
     def start_requests(self):
-        for uid in self.start_urls:
+        for uid in self.start_users:
             yield Request(self.user_url.format(uid=uid), callback=self.parse_user)
 
     def parse_user(self, response):
@@ -27,7 +27,7 @@ class WeibocnSpider(scrapy.Spider):
         result = json.loads(response.text)
         # 判断是否获取到用户的数据信息
         if result.get('data').get('userInfo'):
-            user_info = result.get('date').get('userInfo')
+            user_info = result.get('data').get('userInfo')
             # 实例化useritem对象
             user_item = UserItem()
             # 通过查看传回的数据信息，可以得知返回的数据中有哪些数据

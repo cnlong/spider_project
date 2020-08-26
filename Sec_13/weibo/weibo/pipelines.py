@@ -16,7 +16,7 @@ class TimePipeline(object):
     """
     def process_item(self, item, spider):
         # 判断其是不是需要爬取时间的Item
-        if isinstance(item, UserItem) or isinstance(item, WeiboItem):
+        if isinstance(item, UserItem) or isinstance(item, WeiBoItem):
             # 获取当前时间
             now = time.strftime('%Y-%m-%d %H:%M', time.localtime())
             item['crawled_at'] = now
