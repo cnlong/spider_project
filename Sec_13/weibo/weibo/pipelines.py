@@ -6,7 +6,7 @@
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 import re, time
 import pymongo
-from weibo.items import UserItem, WeiboItem, UserRelationItem
+from weibo.items import UserItem, WeiBoItem, UserRelationItem
 
 
 class TimePipeline(object):
@@ -16,7 +16,7 @@ class TimePipeline(object):
     """
     def process_item(self, item, spider):
         # 判断其是不是需要爬取时间的Item
-        if isinstance(item, UserItem) or isinstance(item. WeiboItem):
+        if isinstance(item, UserItem) or isinstance(item, WeiboItem):
             # 获取当前时间
             now = time.strftime('%Y-%m-%d %H:%M', time.localtime())
             item['crawled_at'] = now
@@ -59,7 +59,7 @@ class WeiboPipeline(object):
 
     def process_item(self, item, spider):
         """对微博时间进行处理"""
-        if isinstance(item, WeiboItem):
+        if isinstance(item, WeiBoItem):
             # 获取捕获到的创建时间
             if item.get('created_at'):
                 # 清除时间两边的空白
@@ -93,14 +93,15 @@ class MongoPipeline(object):
         # 构建索引，大规模数据检索方便
         # 按id升序构建索引
         self.db[UserItem.collection].create_index([('id', pymongo.ASCENDING)])
-        self.db[WeiboItem.collection].create_index([('id', pymongo.ASCENDING)])
+        self.db[WeiBoItem.collection].create_index([('id', pymongo.ASCENDING)])
 
     def close_spider(self, spider):
         self.client.close()
 
     def process_item(self, item, spider):
+        """大规模数据爬取的时候，肯定存在重复的可能性，所以使用MongoDB的更新方法来进行去重"""
         # 对数据进行处理保存
-        if isinstance(item, UserItem) or isinstance(item, WeiboItem):
+        if isinstance(item, UserItem) or isinstance(item, WeiBoItem):
             # 按照id对数据进行更新，先查询，如果查询到数据则进行更新，如果查询不到，则插入新数据
             # 第一个参数为查询条件，第二个参数是爬取的item，数据存在即更新，数据不存在即插入，获得去重的数据
             # 如果不设置$set，则会进行item替换，会删除已存在的数据

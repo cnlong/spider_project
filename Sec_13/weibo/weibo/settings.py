@@ -88,3 +88,17 @@ ROBOTSTXT_OBEY = True
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+# 添加自定义的Pipeline
+ITEM_PIPELINES = {
+    'weibo.pipelines.TimePipeline': 300,
+    'weibo.pipelines.WeiboPipeline': 301,
+    'weibo.pipelines.MongoPipeline': 302,
+}
+
+MONGO_URI = '192.168.6.160'
+MONGO_DATABASE = 'weibocn'
+
+DOWNLOADER_MIDDLEWARES = {
+    'weibo.middlewares.CookiesMiddleware': 554
+}

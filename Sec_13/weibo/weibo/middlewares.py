@@ -6,6 +6,9 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
+import json
+import logging
+import requests
 
 
 class WeiboSpiderMiddleware(object):
@@ -101,3 +104,69 @@ class WeiboDownloaderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+
+class ProxyMiddleware(object):
+    """设置代理的DownloaderMiddleware"""
+    def __init__(self, proxy_url):
+        # 日志收集器,用类名作为logger的名字
+        self.logger = logging.getLogger(__name__)
+        # 获取代理的url
+        self.proxy_url = proxy_url
+
+    def get_random_proxy(self):
+        """根据代理url，随机获取一个代理"""
+        try:
+            response = requests.get(self.proxy_url)
+            if response.status_code == 200:
+                proxy = response.text
+                return proxy
+        # 代理池url请求超时
+        except requests.ConnectionError:
+            return False
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        # 从spider的配置文件中获取代理池地址
+        return cls(proxy_url=crawler.settings.get('PROXY_URL'))
+
+    def process_request(self, request, spider):
+        """注意这里需要返回None，只为其添加代理，添加cookie方法类似"""
+        # 这里赋值代理的判断条件是当前的retry_times不为空，也就是在第一次请求失败的时候才启用代理
+        if request.meta.get('retry_times'):
+            proxy = self.get_random_proxy()
+            if proxy:
+                # 构建代理完整地址
+                uri = 'https://{proxy}'.format(proxy=proxy)
+                # 记录日志
+                self.logger.debug('使用代理：' + uri)
+                # 给request增加代理
+                request.meta['proxy'] = uri
+                # 注意这里必须返回NONE
+
+
+class CookiesMiddleware(object):
+    """赋予Cookie"""
+    def __init__(self, cookies_url):
+        self.logger = logging.getLogger(__name__)
+        self.cookies_url = cookies_url
+
+    def get_random_cookies(self):
+        try:
+            response = requests.get(self.cookies_url)
+            if response.status_code == 200:
+                cookies = response.text
+                return cookies
+        except requests.ConnectionError:
+            return False
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(cookies_url=crawler.settings.get('COOKIES_URL'))
+
+    def process_request(self, request, spider):
+        # cookies = self.get_random_cookies()
+        cookies = {"WEIBOCN_FROM": "1110006030", "SCF":"Aub_3DcoAvaDm7Sf-qQCtFKI53t37IPq0JV1fpRWkzfxj0oFwtkebigYdjL1xYSyVl42glYQ_FHfvIeLrQvjrEU.", "SUB":"_2A25yL-_PDeRhGeNL41UQ8yfFzDqIHXVR0_GHrDV6PUNbktANLUWmkW1NSMDjJaJo_CoA2M1pERH1I3f5QzV-S6QR", "SUBP":"0033WrSXqPxfM725Ws9jqgMF55529P9D9W5IyOFUf3sEpkOHzb_T22CB5JpX5KzhUgL.Fo-f1hMpe0.4S0q2dJLoI0YLxK-LBKqLBoeLxKMLB-eL1K2LxKqL1hnL1K2LxK.L1K.LB-2LxKML1-BL1h5LxK-LBKqLBoeLxKMLB-eL1K2t", "SUHB":"0laVliWfAFVckW", "SSOLoginState":"1596694431", "ALF":"1599286431", "_T_WM":"59300175335", "MLOGIN":"1", "XSRF-TOKEN":"ecdaf6", "M_WEIBOCN_PARAMS":"luicode%3D10000011%26lfid%3D231051_-_recomgroupmemberlist_-_3708997377132149_-_1674166903_-_2310511063_1_3.0_5587139976_3708997377132149_d6374089%26fid%3D1076032151457574%26uicode%3D10000011"}
+        if cookies:
+            requests.cookies = cookies
+            self.logger.debug('使用cookies' + json.dumps(cookies))
