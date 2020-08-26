@@ -20,7 +20,7 @@ class WeibocnSpider(scrapy.Spider):
 
     def start_requests(self):
         for uid in self.start_urls:
-            yield Request(url=self.user_url.format(uid=uid), callback=self.parse_user)
+            yield Request(self.user_url.format(uid=uid), callback=self.parse_user)
 
     def parse_user(self, response):
         """解析用户详情页的数据"""
