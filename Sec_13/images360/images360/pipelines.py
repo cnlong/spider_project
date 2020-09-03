@@ -82,7 +82,7 @@ class ImagePipeline(ImagesPipeline):
     """自定义Pipeline，重写父类的部分方法"""
     def file_path(self, request, response=None, info=None):
         """
-        "重写定义文件的名称
+        重新定义文件的名称
         :param request: get_media_requests方法中新生成的request对象
         :param response: 默认为None
         :param info: 默认为None
