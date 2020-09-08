@@ -10,6 +10,7 @@ starlist = []
 star_total = dataframe.star
 # dataframe.star是数据表中的Series对象，通过str获取每一行数据的字符串,将字符串中的空格去掉
 # 通过str获取每一行数据去掉空格之后的字符串，然后通过逗号分隔得到每一行演员的列表，添加到总列表中
+# dataframe.star.str.replace(' ', '').str.split(',')返回的仍然是Series数据对象，只是将star的显示方式由字符串转换为列表，并且可以迭代
 for i in dataframe.star.str.replace(' ', '').str.split(','):
     starlist.extend(i)
 # 通过set对演员总列表进行去重
