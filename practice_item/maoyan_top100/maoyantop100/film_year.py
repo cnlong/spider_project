@@ -2,7 +2,7 @@
 import pandas as pd
 # pyplot和pylab都是绘制函数图的工具，但是pylab更为全面，包含了许多NumPy和pyplot中的函数，能够进行计算和绘图
 import matplotlib.pyplot as plt
-import pylab as pl  # 用于修改x轴坐标
+import pylab as pl
 
 
 # 设置绘图风格，默认的不好看

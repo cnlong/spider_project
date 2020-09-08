@@ -24,6 +24,9 @@ class TextPipeline(object):
                 item['time'] = re.findall('\d+-\d+-\d+', item['time'])[0]
             elif len(re.findall('\d+', item['time'])) > 0:
                 item['time'] = re.findall('\d+', item['time'])[0]
+        if item['star']:
+            if len(re.findall('主演：(.*)', item['star'])) > 0:
+                item['star'] = re.findall('主演：(.*)', item['star'])[0]
         return item
 
 
