@@ -51,9 +51,9 @@ dataframe['star2'] = dataframe['star'].map(lambda x: x.split(',')[1])
 # dataframe[(dataframe['star1'] == '张国荣')|(dataframe['star2'] == '张国荣')] 筛选出演员中包含张国荣的电影
 # [['star','name']]只显示名字和演员列表
 # reset_index重新设置索引
-star_most = dataframe[(dataframe['star1'] == '张国荣') | (dataframe['star2'] == '张国荣')][['star','name']].reset_index('index')
+star_most = dataframe[(dataframe['star1'] == '张国荣') | (dataframe['star2'] == '张国荣')][['star', 'name']].reset_index('index')
 print(star_most)
 # print(dataframe[['star','name']])
-print(dataframe[(dataframe['star1'] == '张国荣')][['star','name']])
-print(dataframe[(dataframe['star2'] == '张国荣')][['star','name']])
+print(dataframe[(dataframe['star1'] == '张国荣')][['star', 'name']])
+print(dataframe[(dataframe['star2'] == '张国荣')][['star', 'name']])
 
