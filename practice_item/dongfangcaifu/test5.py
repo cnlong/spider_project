@@ -63,10 +63,10 @@ class DownloadDataTable(object):
         self.page = page
         self.date = date
         self.category = category
-        self.browser = webdriver.Chrome()
-        # self.chrome_options = webdriver.ChromeOptions()
-        # self.chrome_options.add_argument('--headless')
-        # self.browser = webdriver.Chrome(chrome_options=self.chrome_options)
+        # self.browser = webdriver.Chrome()
+        self.chrome_options = webdriver.ChromeOptions()
+        self.chrome_options.add_argument('--headless')
+        self.browser = webdriver.Chrome(chrome_options=self.chrome_options)
         self.wait = WebDriverWait(self.browser, 10)
 
     def get_index(self, page):
@@ -123,6 +123,7 @@ class DownloadDataTable(object):
 
     def main(self):
         for i in range(1, self.page + 1):
+            # 爬取第二页和后面的页面时候，会在前一页的基础之上进行跳转，因此不能关闭浏览器，否则会报错
             self.run(i)
         self.browser.close()
 
