@@ -4,10 +4,19 @@
 # Project: huxiu
 
 from pyspider.libs.base_handler import *
+import pymongo
+import time
+import json
+import pandas as pd
+
+client = pymongo.MongoClient('192.168.6.160')
+db = client.huxiu
+mongo_collection = db.huxiu_pyspider
 
 
 class Handler(BaseHandler):
     crawl_config = {
+        'process_time_limit ': 60,
         "headers": {
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36'
         }
@@ -32,9 +41,18 @@ class Handler(BaseHandler):
             'favourites': item['count_info']['favtimes'],
             'shares': item['count_info']['sharetimes']
         } for item in datalist]
-        print(articles)
+        if articles:
+            self.save_to_mongo(articles)
         self.crawl('https://article-api.huxiu.com/web/article/articleList', method='POST',
                    data={'platform': 'www', 'recommend_time': last_dateline}, callback=self.index_page)
+
+    def save_to_mongo(self, result):
+        df = pd.DataFrame(result)
+        print(db)
+        content = json.loads(df.T.to_json()).values()
+        print(content)
+        if mongo_collection.insert_many(content):
+            print("存储成功！")
 
     @config(priority=2)
     def detail_page(self, response):
