@@ -16,7 +16,6 @@ mongo_collection = db.huxiu_pyspider
 
 class Handler(BaseHandler):
     crawl_config = {
-        'process_time_limit ': 60,
         "headers": {
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36'
         }
