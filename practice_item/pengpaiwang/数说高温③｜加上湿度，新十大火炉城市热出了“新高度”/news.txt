@@ -1,0 +1,55 @@
+(本文来自澎湃新闻，更多原创资讯请下载“澎湃新闻”APP)
+
+                    var newsFontSize = wwwstore.getItem("fontSize");
+                    if (newsFontSize != null && newsFontSize != "") {
+                        $(".news_txt").addClass(newsFontSize).attr("data-size", newsFontSize);
+                        $("#" + newsFontSize).addClass("on").siblings().removeClass("on");
+                    }
+                    var play = function (divId, url, defImg, w, h) {
+                        jwplayer(divId).setup({
+                            flashplayer: "//file.thepaper.cn/www/v3/js/jwplayer.flash.swf",
+                            file: url,
+                            image: defImg,
+                            width: w,
+                            height: h
+                        });
+                    }
+                    var playUrl = '', wrapperId = 'player_wrapper', $wrapper = $('#' + wrapperId);
+                    if (playUrl) {
+                        play(wrapperId, playUrl, '', $wrapper.width(), $wrapper.height())
+                    }
+                
+
+
+校对：施鋆
+澎湃新闻报料：4009-20-4009   澎湃新闻，未经授权不得转载
+我要反馈
+
+关键词 >> 数说高温,副高,高温红色预警,体感温度
+
+
+
+
+
+
+收藏
+
+跟踪: 高温
+
+
+
+adJax("//adpai.thepaper.cn/s?c=51&WD-CLIENT-TYPE=05&op=2&arid=1744773&caid=25635", ".news_imgad")
+
+
+
+
+
+相关推荐
+
+
+
+
+评论（546）
+
+
+

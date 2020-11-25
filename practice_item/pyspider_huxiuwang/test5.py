@@ -36,3 +36,6 @@ print(any(df.duplicated()))
 df['title_length'] = df['title'].apply(len)
 df['month'] = df['write_time'].dt.month
 print(df.info())
+print(df.describe())
+print(df['author'].describe())
+print(df['write_time'].describe())
